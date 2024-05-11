@@ -1,19 +1,19 @@
-import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "./store/hooks";
-import { updateBoard } from "./store";
-import { createBoard } from "./utils/createBoard";
+import { useEffect } from "react";
 import Board from "./components/Board";
-import {
-  checkForRowOfFour,
-  checkForRowOfThree,
-  isColumnOffour,
-  isColumnOfThree,
-} from "./utils/moveCheckLogic";
+import { moveBelow, updateBoard } from "./store";
+import { useAppDispatch, useAppSelector } from "./store/hooks";
+import { createBoard } from "./utils/createBoard";
 import {
   formulaForColumnOffour,
   formulaForColumnOfThree,
   generateInvalidMoves,
 } from "./utils/formulas";
+import {
+  isColumnOfThree,
+  checkForRowOfFour,
+  checkForRowOfThree,
+  isColumnOffour,
+} from "./utils/moveCheckLogic";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -21,12 +21,11 @@ function App() {
   const boardSize = useAppSelector(
     ({ candyCrush: { boardSize } }) => boardSize
   );
+
   useEffect(() => {
     dispatch(updateBoard(createBoard(boardSize)));
-    // console.log(createBoard(boardSize));
-  }, [boardSize, dispatch]);
+  }, [dispatch, boardSize]);
 
-  // pop up 4 or 3 consecutive same candies in row or column
   useEffect(() => {
     const timeout = setTimeout(() => {
       const newBoard = [...board];
@@ -38,11 +37,12 @@ function App() {
       );
       isColumnOfThree(newBoard, boardSize, formulaForColumnOfThree(boardSize));
       checkForRowOfThree(newBoard, boardSize, generateInvalidMoves(boardSize));
-
       dispatch(updateBoard(newBoard));
+      dispatch(moveBelow());
     }, 150);
     return () => clearInterval(timeout);
-  }, [board, boardSize, dispatch]);
+  }, [board, dispatch, boardSize]);
+
   return (
     <div className="flex items-center justify-center h-screen">
       <Board />
