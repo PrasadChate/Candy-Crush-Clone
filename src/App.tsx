@@ -1,24 +1,22 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "./store/hooks";
+import { updateBoard } from "./store";
+import { createBoard } from "./utils/createBoard";
+import Board from "./components/Board";
 
 function App() {
+  const dispatch = useAppDispatch();
+  const board = useAppSelector(({ candyCrush: { board } }) => board);
+  const boardSize = useAppSelector(
+    ({ candyCrush: { boardSize } }) => boardSize
+  );
+  useEffect(() => {
+    dispatch(updateBoard(createBoard(boardSize)));
+    // console.log(createBoard(boardSize));
+  }, [boardSize, dispatch]);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="flex items-center justify-center h-screen">
+      <Board />
     </div>
   );
 }
